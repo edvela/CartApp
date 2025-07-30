@@ -1,45 +1,42 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useReducer } from 'react';
 import { CartView } from './components/CartView';
 import { Products } from './components/Products';
 import { Message } from './components/Message';
+import { itemsReducer } from './reducer/itemsReducer';
 
 
-const cartModel = JSON.parse(sessionStorage.getItem('cart')) || []
+const initialCartItems = JSON.parse(sessionStorage.getItem('cart')) || []
 
 export const CartApp = () => {
     
-    const [cart, setCart]  = useState(cartModel);
+    const [cart, dispatch] = useReducer(itemsReducer, initialCartItems );
+
+    useEffect(()=>{
+        sessionStorage.setItem('cart', JSON.stringify(cart))
+    }, [cart])
 
     const handlerAddProductCart = (product) => {
 
         const hasItem = cart.find((i) => i.product.id === product.id);
         
         if(hasItem){
-            setCart(
-                cart.map( (i) => {
-                    if(i.product.id=== product.id){
-                        i.quantity = i.quantity+1
-                    }
-                    return i
-                })
-            )
+            dispatch({
+                type: 'updateProductCart',
+                payload: product
+            })
         } else {
-            setCart([
-                ...cart, 
-                {
-                    product,
-                    quantity: 1,
-                    total: product.price*1
-                }
-            ])
+            dispatch({
+                type: 'addProductCart',
+                payload: product
+            })
         }    
     }
 
     const handlerDeleteProductCart = (id) => {
-        console.log("Trigered!!!")
-        setCart([
-            ...cart.filter((i)=>i.product.id !== id)
-        ])
+        dispatch({
+            type: 'deleteProductCart',
+            payload: id
+        })
     };
 
     return (
