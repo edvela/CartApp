@@ -4,16 +4,12 @@ import { Product } from "./Product";
 
 export const Products = ( { handler }) => {
     const [products, setProducts] = useState([]);
-
     useEffect(() => {
         setProducts(getProducts());
     }, []);
-    return(
-        
+    return(        
         <>
-            <h1>Cart App</h1>
             <div className="row text-center">
-
                 {products.map ( p =>(
                     <div className="col-4 my-4"key={p.id}>
                         <Product 
